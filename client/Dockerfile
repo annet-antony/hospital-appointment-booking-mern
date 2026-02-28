@@ -10,12 +10,15 @@ ADD . /app
 # Update pip
 # RUN pip3 install --upgrade pip
 
-# Install necessary packages
-RUN apt-get update && apt-get install -y --fix-missing unixodbc-dev gnupg curl
-# RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-# RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
-# RUN apt-get update
-# RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
+# Copy local directories to the current local directory of our docker image (/app)
+COPY ./src ./src
+COPY ./public ./public
+
+# Install node packages, install serve, build the app, and remove dependencies at the end
+RUN npm install \
+    && npm install -g serve \
+    && npm run build \
+    && rm -fr node_modules
 
 
 COPY package*.json /app
